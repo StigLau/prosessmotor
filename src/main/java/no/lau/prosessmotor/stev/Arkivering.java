@@ -1,11 +1,28 @@
 package no.lau.prosessmotor.stev;
 
-/**
- * Created by IntelliJ IDEA.
- * User: stiglau
- * Date: 07.03.12
- * Time: 11.05
- * To change this template use File | Settings | File Templates.
- */
+import no.lau.prosessmotor.services.ArchiveService;
+import no.lau.prosessmotor.services.SigningService;
+
+import java.util.Map;
+
 public class Arkivering {
+
+    SigningService signingService;
+    ArchiveService archiveService;
+
+    public Arkivering(SigningService signingService, ArchiveService archiveService) {
+        this.signingService = signingService;
+        this.archiveService = archiveService;
+    }
+
+    public Map run(Map<String, String> context) throws Exception {
+        String processId = context.get("processId");
+
+        String xmlDocument = signingService.fetchSignedDocument(processId);
+        String documentReference = archiveService.archive(xmlDocument);
+        context.put("documentReferenceInArchive", documentReference);
+        context.put("endState", "ok");
+        return context;
+    }
 }
+

@@ -7,13 +7,11 @@
     <artifactId>prosessmotor</artifactId>
     <version>0.1-SNAPSHOT</version>
     <dependencies>
-        <!--
         <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.1</version>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.9.0</version>
         </dependency>
-        -->
 
         <!-- Testing -->
         <dependency>

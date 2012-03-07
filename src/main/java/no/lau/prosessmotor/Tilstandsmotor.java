@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Tilstandsmotor {
 
-    public List<State> states = new ArrayList<State>();
+    List<State> states = new ArrayList<State>();
     List<Prosess> processes = new ArrayList<Prosess>();
 
 
