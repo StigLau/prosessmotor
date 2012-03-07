@@ -1,0 +1,12 @@
+.project
+.classpath
+.settings
+.idea
+*.iml
+*.ipr
+*.iws
+target
+out
+.DS_Store
+lib_managed
+*/project/boot/
