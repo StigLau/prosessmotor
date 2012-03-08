@@ -15,7 +15,7 @@ public class Limbo {
         if(!stevMap.containsKey(stepName))
             throw new StevNotFoundException(stepName);
         if(!limboPersistens.containsKey(processId))
-            throw new NoSuchFieldException(processId);
+            throw new NoSuchFieldException("ProcessId " + processId);
 
         Stev stev = stevMap.get(stepName);
         Map<String, String> context = limboPersistens.get(processId);
