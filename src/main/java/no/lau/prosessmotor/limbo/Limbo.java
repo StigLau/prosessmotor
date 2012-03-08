@@ -24,7 +24,7 @@ public class Limbo {
             Map<String, String> resultingStevContext = stev.run(context);
             context.putAll(resultingStevContext);
             context.put(stepName + " endState", "ok");
-            context.put(stepName + " timestamp", new DateTime().toString("dd.MM.yyyy HH:mm"));
+            context.put(stepName + " timestamp", new DateTime().toString("dd.MM.yyyy HH:mm:ss"));
             return context;
         } catch (Exception e) {
             e.printStackTrace();
