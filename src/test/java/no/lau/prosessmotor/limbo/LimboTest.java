@@ -10,20 +10,20 @@ import static org.mockito.Mockito.mock;
 
 public class LimboTest {
     Limbo limbo = new Limbo();
-    String stev1 = "Stev 1";
-    String stev2 = "Stev 2";
+    Stev stev1 = mock(Stev.class);
+    Stev stev2 = mock(Stev.class);
 
     @Before
     public void setup() {
-        limbo.addStev(stev1, mock(Stev.class));
-        limbo.addStev(stev2, mock(Stev.class));
+        limbo.addStev(stev1);
+        limbo.addStev(stev2);
     }
     
     @Test
     public void runningLimboWithOnlyValidation() throws Exception {
         String processId = "123";
         limbo.updateState(processId, "mock state", "hello");
-        Map<String, String> result = limbo.run(processId, stev1);
+        Map<String, String> result = limbo.run(processId, stev1.toString());
         assertEquals("ok", result.get(stev1 + " endState"));
         assertNotNull(result.get(stev1 + " timestamp"));
     }
@@ -35,15 +35,15 @@ public class LimboTest {
 
     @Test(expected = NoSuchFieldException.class)
     public void processIdNotFoundThrowsException() throws Exception{
-        limbo.run("Does not exist", stev1);
+        limbo.run("Does not exist", stev1.toString());
     }
 
     @Test
     public void runningBothValideringAndArkivering() throws Exception {
         String processId = "123";
         limbo.updateState(processId, "some state", "hello");
-        limbo.run(processId, stev1);
-        Map<String, String> result = limbo.run(processId, stev2);
+        limbo.run(processId, stev1.toString());
+        Map<String, String> result = limbo.run(processId, stev2.toString());
         assertEquals("ok", result.get(stev1 + " endState"));
         assertEquals("ok", result.get(stev2 + " endState"));
         System.out.println("Timestamp " + stev1 + result.get(stev1 + " timestamp"));

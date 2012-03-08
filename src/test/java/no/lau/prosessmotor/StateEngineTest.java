@@ -1,9 +1,11 @@
 package no.lau.prosessmotor;
 
+import no.lau.prosessmotor.limbo.Limbo;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 
 public class StateEngineTest {
 
@@ -24,6 +26,7 @@ public class StateEngineTest {
     @Test
     public void testStateMachine() throws Exception {
         tilstandsmotor.createNewProsess("100");
+        tilstandsmotor.observeLimbo(mock(Limbo.class));
         State tilstandsmotorResult = tilstandsmotor.run("100");
         assertEquals("Validering", tilstandsmotorResult.name);
     }

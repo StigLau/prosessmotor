@@ -24,16 +24,17 @@ public class Limbo {
             Map<String, String> resultingStevContext = stev.run(context);
             context.putAll(resultingStevContext);
             context.put(stepName + " endState", "ok");
-            context.put(stepName + " timestamp", new DateTime().toString("dd.MM.yyyy HH:mm:ss"));
-            return context;
+            String endTimeStamp = new DateTime().toString("dd.MM.yyyy HH:mm:ss");
+            context.put(stepName + " timestamp", endTimeStamp);
+            System.out.println(endTimeStamp + " - Limbo: " + stepName + " finished successfully");
         } catch (Exception e) {
             e.printStackTrace();
-            return context;
         }
+        return context;
     }
     
-    void addStev(String navn, Stev stev) {
-        stevMap.put(navn, stev);
+    public void addStev(Stev stev) {
+        stevMap.put(stev.toString(), stev);
     }
 
     public void updateState(String processId, String key, String value) {
