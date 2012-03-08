@@ -3,9 +3,10 @@ package no.lau.prosessmotor.stev;
 import no.lau.prosessmotor.services.ArchiveService;
 import no.lau.prosessmotor.services.SigningService;
 
+import javax.sql.StatementEvent;
 import java.util.Map;
 
-public class Arkivering {
+public class Arkivering implements Stev {
 
     SigningService signingService;
     ArchiveService archiveService;

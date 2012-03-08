@@ -14,8 +14,7 @@ public class ValideringTest {
         Map<String, String> context = new HashMap<String, String>();
         context.put("processId", "123");
         context.put("fnr", "12345678901");
-        Map result = validering.run(context);
-        assertEquals("ok", result.get("Validering endState"));
-        System.out.println("Validering timestamp " + result.get("Validering timestamp"));
+        Map resultContext = validering.run(context);
+        assertEquals(resultContext, context);
     }
 }
