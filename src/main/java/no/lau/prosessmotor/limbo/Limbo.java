@@ -9,16 +9,16 @@ import java.util.Map;
 public class Limbo {
 
     private Map<String, Stev> stevMap = new HashMap<String, Stev>();
-    private Map<String, Map<String, String>> limboPersistens = new HashMap<String, Map<String, String>>();
+    private Map<String, Map<String, String>> prosesserOgDeresTilstand = new HashMap<String, Map<String, String>>();
 
     public Map<String, String> run(String processId, String stepName) throws Exception {
         if(!stevMap.containsKey(stepName))
             throw new StevNotFoundException(stepName);
-        if(!limboPersistens.containsKey(processId))
+        if(!prosesserOgDeresTilstand.containsKey(processId))
             throw new NoSuchFieldException("ProcessId " + processId);
 
         Stev stev = stevMap.get(stepName);
-        Map<String, String> context = limboPersistens.get(processId);
+        Map<String, String> context = prosesserOgDeresTilstand.get(processId);
 
         try {
             Map<String, String> resultingStevContext = stev.run(context);
@@ -38,8 +38,8 @@ public class Limbo {
     }
 
     public void updateState(String processId, String key, String value) {
-        if(!limboPersistens.containsKey(processId))
-            limboPersistens.put(processId, new HashMap<String, String>());
-        limboPersistens.get(processId).put(key, value);
+        if(!prosesserOgDeresTilstand.containsKey(processId))
+            prosesserOgDeresTilstand.put(processId, new HashMap<String, String>());
+        prosesserOgDeresTilstand.get(processId).put(key, value);
     }
 }

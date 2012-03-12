@@ -25,13 +25,12 @@ public class ArkiveringTest {
         String mockArchiveId = "123";
 
         Map<String, String> context = new HashMap<String, String>();
-        context.put("processId", processId);
+        context.put(SigningService.SIGNING_ID, processId);
 
         when(signingService.fetchSignedDocument(processId)).thenReturn(mockDocument);
         when(archiveService.archive(mockDocument)).thenReturn(mockArchiveId);
         
         Map result = arkivering.run(context);
-        assertEquals("ok", result.get("endState"));
         assertEquals(mockArchiveId, result.get("documentReferenceInArchive"));
     }
     
@@ -41,7 +40,7 @@ public class ArkiveringTest {
         String mockDocument = "mock XML Document";
 
         Map<String, String> context = new HashMap<String, String>();
-        context.put("processId", processId);
+        context.put(SigningService.SIGNING_ID, processId);
 
         when(signingService.fetchSignedDocument(processId)).thenReturn(mockDocument);
         when(archiveService.archive(mockDocument)).thenThrow(new Exception("Sucky archive service"));

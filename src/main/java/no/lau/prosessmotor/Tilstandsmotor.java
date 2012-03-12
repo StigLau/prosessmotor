@@ -1,6 +1,7 @@
 package no.lau.prosessmotor;
 
 import no.lau.prosessmotor.limbo.Limbo;
+import no.lau.prosessmotor.stev.Stev;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,11 +25,12 @@ public class Tilstandsmotor {
 
     private State run(Prosess process, State state) throws Exception {
         Map<String, String> contextAfterRunning = limbo.run(process.prosessId, state.toString());
-        int currentStateIndex = states.indexOf(process.state);
-        if(currentStateIndex > states.size()) {
-            run(process, states.get(currentStateIndex + 1));
+        int currentStateIndex = states.indexOf(state);
+        if(currentStateIndex + 1 >= states.size()) {
+            return process.state;
+        } else {
+            return run(process, states.get(currentStateIndex + 1));
         }
-        return process.state;
     }
 
     public void createNewProsess(String prosessId) {
@@ -52,6 +54,11 @@ class State {
     public State(String name) {
         this.name = name;
     }
+
+    public State(Stev stev) {
+        this.name = stev.toString();
+    }
+
     public String toString() {
         return name;
     }

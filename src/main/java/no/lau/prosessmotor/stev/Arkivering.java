@@ -3,7 +3,6 @@ package no.lau.prosessmotor.stev;
 import no.lau.prosessmotor.services.ArchiveService;
 import no.lau.prosessmotor.services.SigningService;
 
-import javax.sql.StatementEvent;
 import java.util.Map;
 
 public class Arkivering implements Stev {
@@ -16,13 +15,12 @@ public class Arkivering implements Stev {
         this.archiveService = archiveService;
     }
 
-    public Map run(Map<String, String> context) throws Exception {
-        String processId = context.get("processId");
+    public Map<String, String> run(Map<String, String> context) throws Exception {
+        String signingId = context.get(SigningService.SIGNING_ID);
 
-        String xmlDocument = signingService.fetchSignedDocument(processId);
+        String xmlDocument = signingService.fetchSignedDocument(signingId);
         String documentReference = archiveService.archive(xmlDocument);
         context.put("documentReferenceInArchive", documentReference);
-        context.put("endState", "ok");
         return context;
     }
 }
