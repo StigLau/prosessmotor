@@ -10,7 +10,8 @@ import static org.mockito.Mockito.mock;
 public class StateEngineTest {
 
     Tilstandsmotor tilstandsmotor = new Tilstandsmotor();
-    
+    State signedContract = new State("ArchiveSignedContract");
+
     @Before
     public void setUp() {
         tilstandsmotor.addState(new State("Validering"));
@@ -18,7 +19,7 @@ public class StateEngineTest {
         //tilstandsmotor.addState(new State("ContractCreation"));
         //tilstandsmotor.addState(new State("InsertSignOrder"));
         //tilstandsmotor.addState(new State("Signing"));
-        tilstandsmotor.addState(new State("ArchiveSignedContract"));
+        tilstandsmotor.addState(signedContract);
         //tilstandsmotor.addState(new State("CreateAccount"));
         //tilstandsmotor.addState(new State("WithdrawFee"));
     }
@@ -27,8 +28,8 @@ public class StateEngineTest {
     public void testStateMachine() throws Exception {
         tilstandsmotor.createNewProsess("100");
         tilstandsmotor.observeLimbo(mock(Limbo.class));
-        State tilstandsmotorResult = tilstandsmotor.run("100");
-        assertEquals("Validering", tilstandsmotorResult.name);
+        Prosess tilstandsmotorResult = tilstandsmotor.run("100");
+        assertEquals(signedContract, tilstandsmotorResult.state);
     }
 
     @Test(expected = Exception.class)
