@@ -7,36 +7,36 @@ import java.util.List;
 
 public class Tilstandsmotor {
 
-    List<State> stevList = new ArrayList<State>();
+    List<Steg> stevList = new ArrayList<Steg>();
     List<Prosess> processes = new ArrayList<Prosess>();
     private Limbo limbo;
 
     /**
      *
      * @param prosessId
-     * @return the updated state of the process
+     * @return the updated steg of the process
      * @throws Exception
      */
     public Prosess run(String prosessId) throws Exception {
         for (Prosess process : processes) {
             if(process.prosessId.equals(prosessId)) {
-                return run(process, process.state);
+                return run(process, process.steg);
             }
         }
         throw new Exception("Process with ID " + prosessId + " not found in repository");
     }
 
-    private Prosess run(Prosess process, State state) throws Exception {
-        process.state = state;
-        State stateAfterRunning = limbo.run(process.prosessId, state.toString());
+    private Prosess run(Prosess process, Steg steg) throws Exception {
+        process.steg = steg;
+        Tilstand tilstandAfterRunning = limbo.run(process.prosessId, steg.toString());
         
-        int currentStateIndex = stevList.indexOf(state);
-        if(stateAfterRunning == State.FAILED )
+        int currentStegIndex = stevList.indexOf(steg);
+        if(tilstandAfterRunning == Tilstand.FAILED )
             return process;
-        else if(currentStateIndex + 1 >= stevList.size()) {
+        else if(currentStegIndex + 1 >= stevList.size()) {
             return process;
         } else {
-            return run(process, stevList.get(currentStateIndex + 1));
+            return run(process, stevList.get(currentStegIndex + 1));
         }
     }
 
@@ -44,8 +44,8 @@ public class Tilstandsmotor {
         processes.add(new Prosess(prosessId, stevList.get(0)));
     }
 
-    public void addState(State state) {
-        stevList.add(state);
+    public void addSteg(Steg steg) {
+        stevList.add(steg);
     }
 
     public void observeLimbo(Limbo limbo) {
@@ -58,10 +58,10 @@ public class Tilstandsmotor {
 class Prosess {
 
     final public String prosessId;
-    public State state;
+    public Steg steg;
 
-    public Prosess(String prosessId, State state) {
+    public Prosess(String prosessId, Steg steg) {
         this.prosessId = prosessId;
-        this.state = state;
+        this.steg = steg;
     }
 }

@@ -2,17 +2,15 @@ package no.lau.prosessmotor;
 
 import no.lau.prosessmotor.stev.Stev;
 
-public class State {
+public class Steg {
 
     public final String name;
-    public static final State OK = new State("ok");
-    public static final State FAILED = new State("failed");
 
-    public State(String name) {
+    public Steg(String name) {
         this.name = name;
     }
 
-    public State(Stev stev) {
+    public Steg(Stev stev) {
         this.name = stev.toString();
     }
 

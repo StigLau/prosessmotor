@@ -10,18 +10,18 @@ import static org.mockito.Mockito.mock;
 public class StateEngineTest {
 
     Tilstandsmotor tilstandsmotor = new Tilstandsmotor();
-    State signedContract = new State("ArchiveSignedContract");
+    Steg signedContract = new Steg("ArchiveSignedContract");
 
     @Before
     public void setUp() {
-        tilstandsmotor.addState(new State("Validering"));
-        //tilstandsmotor.addState(new State("ReserveAccount"));
-        //tilstandsmotor.addState(new State("ContractCreation"));
-        //tilstandsmotor.addState(new State("InsertSignOrder"));
-        //tilstandsmotor.addState(new State("Signing"));
-        tilstandsmotor.addState(signedContract);
-        //tilstandsmotor.addState(new State("CreateAccount"));
-        //tilstandsmotor.addState(new State("WithdrawFee"));
+        tilstandsmotor.addSteg(new Steg("Validering"));
+        //tilstandsmotor.addSteg(new Steg("ReserveAccount"));
+        //tilstandsmotor.addSteg(new Steg("ContractCreation"));
+        //tilstandsmotor.addSteg(new Steg("InsertSignOrder"));
+        //tilstandsmotor.addSteg(new Steg("Signing"));
+        tilstandsmotor.addSteg(signedContract);
+        //tilstandsmotor.addSteg(new Steg("CreateAccount"));
+        //tilstandsmotor.addSteg(new Steg("WithdrawFee"));
     }
 
     @Test
@@ -29,7 +29,7 @@ public class StateEngineTest {
         tilstandsmotor.createNewProsess("100");
         tilstandsmotor.observeLimbo(mock(Limbo.class));
         Prosess tilstandsmotorResult = tilstandsmotor.run("100");
-        assertEquals(signedContract, tilstandsmotorResult.state);
+        assertEquals(signedContract, tilstandsmotorResult.steg);
     }
 
     @Test(expected = Exception.class)

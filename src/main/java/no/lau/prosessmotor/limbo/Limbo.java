@@ -1,6 +1,6 @@
 package no.lau.prosessmotor.limbo;
 
-import no.lau.prosessmotor.State;
+import no.lau.prosessmotor.Tilstand;
 import no.lau.prosessmotor.stev.Stev;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -17,7 +17,7 @@ public class Limbo {
     private Map<String, List<History>> histories = new HashMap<String, List<History>>();
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public State run(String processId, String stepName) throws Exception {
+    public Tilstand run(String processId, String stepName) throws Exception {
         if(!stevMap.containsKey(stepName))
             throw new StevNotFoundException(stepName);
         if(!prosesserOgDeresTilstand.containsKey(processId))
@@ -31,11 +31,11 @@ public class Limbo {
             context.putAll(resultingStevContext);
             histories.get(processId).add(new History(stepName, "ok", new DateTime()));
             logger.info(timestamp() + " - Limbo: " + stepName + " finished successfully");
-            return State.OK;
+            return Tilstand.OK;
         } catch (Exception e) {
             logger.error("Experienced a problem", e);
             histories.get(processId).add(new History(stepName, "failed; " + e.getMessage(), new DateTime()));
-            return State.FAILED;
+            return Tilstand.FAILED;
         }
     }
 
@@ -43,7 +43,7 @@ public class Limbo {
         stevMap.put(stev.toString(), stev);
     }
 
-    public void updateState(String processId, String key, String value) {
+    public void updateSteg(String processId, String key, String value) {
         if(!histories.containsKey(processId))
             histories.put(processId, new ArrayList<History>());
         if(!prosesserOgDeresTilstand.containsKey(processId))
