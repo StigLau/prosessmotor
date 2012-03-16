@@ -2,11 +2,9 @@ package no.lau.prosessmotor;
 
 import no.lau.prosessmotor.limbo.Limbo;
 import no.lau.prosessmotor.services.ArchiveService;
+import no.lau.prosessmotor.services.ContractService;
 import no.lau.prosessmotor.services.SigningService;
-import no.lau.prosessmotor.stev.ArkiverKvittering;
-import no.lau.prosessmotor.stev.Arkivering;
-import no.lau.prosessmotor.stev.Stev;
-import no.lau.prosessmotor.stev.Validering;
+import no.lau.prosessmotor.stev.*;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
@@ -22,22 +20,28 @@ public class ProsessmotorTest {
     Stev validering;
     Stev arkivering;
     Stev arkiverKvittering;
+    Stev bestillSignering;
+    ContractService contractService = mock(ContractService.class);
     ArchiveService archiveService = mock(ArchiveService.class);
+    SigningService signingService = mock(SigningService.class);
 
     @Before
     public void setup() {
         validering = new Validering();
-        arkivering = new Arkivering(mock(SigningService.class), archiveService);
+        bestillSignering = new BestillSignering(contractService, signingService);
+        arkivering = new Arkivering(signingService, archiveService);
         arkiverKvittering = new ArkiverKvittering();
+        //This sets up the flow in the state machine
         limbo.addStev(validering);
+        limbo.addStev(bestillSignering);
         limbo.addStev(arkivering);
         limbo.addStev(arkiverKvittering);
+
         tilstandsmotor.observeLimbo(limbo);
     
         tilstandsmotor.addSteg(new Steg(validering));
         //tilstandsmotor.addSteg(new Steg("ReserveAccount"));
-        //tilstandsmotor.addSteg(new Steg("ContractCreation"));
-        //tilstandsmotor.addSteg(new Steg("InsertSignOrder"));
+        tilstandsmotor.addSteg(new Steg(bestillSignering));
         //tilstandsmotor.addSteg(new Steg("Signing"));
         tilstandsmotor.addSteg(new Steg(arkivering));
         //tilstandsmotor.addSteg(new Steg("CreateAccount"));
@@ -63,10 +67,16 @@ public class ProsessmotorTest {
         assertEquals(arkivering.toString(), tilstandsmotor.run(processId).steg.name);
         //Run a second time
         assertEquals(arkiverKvittering.toString(), tilstandsmotor.run(processId).steg.name);
-        assertEquals(4, limbo.getHistory(processId).size());
-        assertEquals(validering + " ok", limbo.getHistory(processId).get(0).stepName + " " + limbo.getHistory(processId).get(0).state);
-        assertEquals(arkivering + " failed; ArchiveService is having a bad day, try again later", limbo.getHistory(processId).get(1).stepName + " " + limbo.getHistory(processId).get(1).state);
-        assertEquals(arkivering + " ok", limbo.getHistory(processId).get(2).stepName + " " + limbo.getHistory(processId).get(2).state);
-        assertEquals(arkiverKvittering + " ok", limbo.getHistory(processId).get(3).stepName + " " + limbo.getHistory(processId).get(3).state);
+        assertEquals(5, limbo.getHistory(processId).size());
+        int i = 0;
+        assertEquals(validering + " ok", resultString(processId, i++));
+        assertEquals(bestillSignering + " ok", resultString(processId, i++));
+        assertEquals(arkivering + " failed; ArchiveService is having a bad day, try again later", resultString(processId, i++));
+        assertEquals(arkivering + " ok", resultString(processId, i++));
+        assertEquals(arkiverKvittering + " ok", resultString(processId, i++));
+    }
+
+    private String resultString(String processId, int i) {
+        return limbo.getHistory(processId).get(i).stepName + " " + limbo.getHistory(processId).get(i).state;
     }
 }

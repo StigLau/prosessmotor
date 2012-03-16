@@ -25,26 +25,26 @@ public class ArkiveringTest {
         String mockArchiveId = "123";
 
         Map<String, String> context = new HashMap<String, String>();
-        context.put(SigningService.SIGNING_ID, processId);
+        context.put(BestillLaanConstants.SIGN_ID, processId);
 
         when(signingService.fetchSignedDocument(processId)).thenReturn(mockDocument);
         when(archiveService.archive(mockDocument)).thenReturn(mockArchiveId);
-        
+
         Map result = arkivering.run(context);
         assertEquals(mockArchiveId, result.get("documentReferenceInArchive"));
     }
-    
+
     @Test (expected = Exception.class)
     public void archiveServiceDown() throws Exception {
         String processId = "testId 5";
         String mockDocument = "mock XML Document";
 
         Map<String, String> context = new HashMap<String, String>();
-        context.put(SigningService.SIGNING_ID, processId);
+        context.put(BestillLaanConstants.SIGN_ID, processId);
 
         when(signingService.fetchSignedDocument(processId)).thenReturn(mockDocument);
         when(archiveService.archive(mockDocument)).thenThrow(new Exception("Sucky archive service"));
-        
+
         arkivering.run(context);
     }
 }

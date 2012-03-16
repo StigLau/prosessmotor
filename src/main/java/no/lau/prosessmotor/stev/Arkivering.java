@@ -1,5 +1,6 @@
 package no.lau.prosessmotor.stev;
 
+import no.lau.prosessmotor.BestillLaanConstants;
 import no.lau.prosessmotor.services.ArchiveService;
 import no.lau.prosessmotor.services.SigningService;
 
@@ -16,7 +17,7 @@ public class Arkivering implements Stev {
     }
 
     public Map<String, String> run(Map<String, String> context) throws Exception {
-        String signingId = context.get(SigningService.SIGNING_ID);
+        String signingId = context.get(BestillLaanConstants.SIGN_ID);
 
         String xmlDocument = signingService.fetchSignedDocument(signingId);
         String documentReference = archiveService.archive(xmlDocument);
