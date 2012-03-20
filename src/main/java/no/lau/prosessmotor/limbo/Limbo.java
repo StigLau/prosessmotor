@@ -55,6 +55,10 @@ public class Limbo {
         return histories.get(processId);
     }
 
+    public String retrieveState(String processId, String key) {
+        return prosesserOgDeresTilstand.get(processId).get(key);
+    }
+
     private String timestamp() {
         return new DateTime().toString("dd.MM.yyyy HH:mm:ss");
     }

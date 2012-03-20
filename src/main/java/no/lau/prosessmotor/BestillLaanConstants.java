@@ -11,4 +11,5 @@ public class BestillLaanConstants {
     public static final String KONTO_NR = "Kontonummer";
     public static final String LOAN_CONTRACT_TYPE = "Huslaanskontraktstype";
     public static final String SIGN_ID = "Signing ID";
+    public static final String EMAIL = "Epost";
 }
