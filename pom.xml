@@ -33,6 +33,13 @@
         <dependencies>
             <!-- Common -->
             <dependency>
+                <groupId>joda-time</groupId>
+                <artifactId>joda-time</artifactId>
+                <version>2.0</version>
+            </dependency>
+
+            <!-- Camel -->
+            <dependency>
                 <groupId>org.apache.camel</groupId>
                 <artifactId>camel-jms</artifactId>
                 <version>${camel-core.version}</version>
@@ -70,6 +77,13 @@
             <version>4.11</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.9.5</version>
+            <scope>test</scope>
+        </dependency>
+
 
         <!-- logging -->
         <dependency>
