@@ -1,4 +1,5 @@
 import org.apache.camel.Exchange
+import org.apache.camel.ExchangePattern
 import org.apache.camel.LoggingLevel
 import org.apache.camel.Processor
 import org.apache.camel.Produce
@@ -20,12 +21,16 @@ class VdvilIntegrationTest extends CamelTestSupport {
     def dbLocation = "/tmp/vdvil/db"
     GraphDatabaseService graphDb = new GraphDatabaseFactory().newEmbeddedDatabase(dbLocation);
 
-    enum Header_Fields { FETCH_URL, SAVE_AS_FILE_NAME }
-    enum Routes { FETCH_META_DATA }
+    enum Header_Fields {
+        FETCH_URL, SAVE_AS_FILE_NAME
+    }
+    enum Routes {
+        FETCH_META_DATA
+    }
 
     @Before
     void setup() {
-        registerShutdownHook( graphDb );
+        registerShutdownHook(graphDb);
     }
 
     @Test
@@ -44,16 +49,30 @@ class VdvilIntegrationTest extends CamelTestSupport {
         return new RouteBuilder() {
             @Override
             public void configure() throws Exception {
-                from("direct:${Routes.FETCH_META_DATA.toString()}").tracing()
-                    .to("direct:downloadAndSave")
-                    .to("direct:saveFile", "direct:fetchParts")
-                        //.log(LoggingLevel.WARN, "Saving \$body to file")
 
-                from("direct:saveFile")
-                .setBody(header("msgPayload"))
-                        .setHeader(Exchange.FILE_NAME, simple("\${header.${Header_Fields.SAVE_AS_FILE_NAME.toString()}}"))
+                from("direct:${Routes.FETCH_META_DATA.name()}").tracing()
+                        //.setExchangePattern(ExchangePattern.InOnly)
 
-                    .to("file:/tmp/vdvil")
+
+                        .setHeader(Exchange.HTTP_URI, simple('${header.FETCH_URL}'))
+                        .setHeader(Exchange.HTTP_METHOD, constant("GET"))
+                        .to("http://to_be_replaced_by_header_values")
+                        .setHeader("msgPayload", body())
+
+
+
+
+                        .setBody(simple("header.msgPayload"))
+                        .split().tokenizeXML("url")
+                        .to("direct:FETCH_META_DATA")
+                        //.setHeader(Exchange.FILE_NAME, simple("off.xml"))
+                        //.to("file:/tmp/vdvil")
+
+
+                        .setBody(simple("header.msgPayload"))
+                        //.setHeader(Exchange.FILE_NAME, simple('composition.xml'))
+                        .to("file:/tmp/vdvil")
+
 
                 /*
                 .process(new Neo4JStore(graphDb: graphDb,
@@ -62,18 +81,8 @@ class VdvilIntegrationTest extends CamelTestSupport {
                         value: composition))
                         */
                 //        .to("stream:out");
-                from("direct:fetchParts")
-                .setBody(header("msgPayload"))
-                .split().tokenizeXML("part").streaming()
 
-                    //.simple('$header[msgPayload]').split(new XPathBuilder("//composition/parts/part"))
-                        .to("stream:out")
-
-                from("direct:downloadAndSave")
-                        .setHeader(Exchange.HTTP_URI, simple("\${header.${Header_Fields.FETCH_URL.toString()}}"))
-                        .setHeader(Exchange.HTTP_METHOD, constant("GET"))
-                        .to("http://to_be_replaced_by_header_values")
-                        .setHeader("msgPayload", body())
+                //.simple('$header[msgPayload]').split(new XPathBuilder("//composition/parts/part"))
 
                 /*
                 .choice()
@@ -87,14 +96,15 @@ class VdvilIntegrationTest extends CamelTestSupport {
             }
         };
     }
-    static void registerShutdownHook( final GraphDatabaseService graphDb ) {
+
+    static void registerShutdownHook(final GraphDatabaseService graphDb) {
         // Registers a shutdown hook for the Neo4j instance so that it
         // shuts down nicely when the VM exits (even if you "Ctrl-C" the
         // running example before it's completed)
-        Runtime.getRuntime().addShutdownHook( new Thread() {
+        Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() { graphDb.shutdown(); }
-        } );
+        });
     }
 }
 

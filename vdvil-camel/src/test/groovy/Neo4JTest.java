@@ -1,4 +1,4 @@
-package groovy;
+
 
 import org.junit.Test;
 import org.neo4j.graphdb.*;
