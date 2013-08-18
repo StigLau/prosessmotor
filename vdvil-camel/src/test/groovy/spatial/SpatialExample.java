@@ -1,4 +1,5 @@
 package spatial;
+              /*
 
 import org.neo4j.gis.spatial.indexprovider.SpatialIndexProvider;
 import org.neo4j.graphdb.Node;
@@ -11,7 +12,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 public class SpatialExample {
     public static void main(String[] args) throws IOException {
         List<String> lines = readFile("stadiums.csv");
@@ -48,3 +48,4 @@ public class SpatialExample {
         return lines;
     }
 }
+*/
