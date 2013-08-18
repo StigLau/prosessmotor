@@ -27,11 +27,19 @@ public class RailroadExample {
     private static String DB_PATH = "/tmp/neo4j";
 
     public enum RelTypes implements RelationshipType {
-        LEADS_TO, IS_A,
+        LEADS_TO, //Deprecated
+        IS_A, //Classification in the meta-model
         CLASSIFIED_AS, //Klassifisering av hva noe er; point of interest, Train Station
-        ENGULFS //For å si at dette er et videre områdebegrep enn dets mindre områder (Land, fylke, kommune osv)
+        ENGULFS, //For å si at dette er et videre områdebegrep enn dets mindre områder (Land, fylke, kommune osv)
+        TRAVELS,
+        TRIP_LEG, //A trip-leg a user will encounter
+        PLANNED_TRIP, //Trips a user owns
+        FROM, //Start of a planned trip
+        TO, //End of a planned trip
+        EMBARKS_FROM, //Where a Vehicle embarks from
 
     }
+
     GraphDatabaseService graphDb = new EmbeddedGraphDatabase(DB_PATH);
 
     Index<Node> nodeIndex;
@@ -54,6 +62,39 @@ public class RailroadExample {
         System.out.println("Northampton - Brighton with a distance of: " + path.weight() + " and via: ");
         for (Node n : path.nodes()) {
             System.out.print(" " + n.getProperty("name"));
+        }
+    }
+
+
+    @Test
+    public void testUserCreatesTravelPlanFromOsloToGx553() {
+        Node oslo = find("Oslo");
+        Node sk273 = find("SK273");
+        System.out.println(oslo);
+        //Trip trip = new Trip(graphDb, nodeIndex);
+
+        Transaction tx = graphDb.beginTx();
+        try {
+
+            Node gunnar = createNode("User Gunnar");
+            Node gunnarsBergenTrip = createNode("Gunnars trip to Bergen");
+            createRelationship(gunnar, PLANNED_TRIP, gunnarsBergenTrip);
+            gunnarsBergenTrip.createRelationshipTo(oslo, FROM);
+            gunnarsBergenTrip.createRelationshipTo(sk273, TO);
+
+            Relationship osloSk273 = oslo.createRelationshipTo(sk273, TRIP_LEG);
+
+
+            //Point of interest to Point of interest
+            //Region
+            //Port / Train Station / Security / Baggage collection
+            //Food Vendor, Tax Free, Kiosk, Toilet
+
+
+            //Plain
+            tx.success();
+        } finally {
+            tx.finish();
         }
     }
 
@@ -84,8 +125,9 @@ public class RailroadExample {
             Node southampton = createNode("Southampton");
 
             Node oslo = createNode("Oslo");
+            Node bergen = createNode("Bergen");
             Node london = createNode("London");
-            Node gardermoen = createNode("Gardermoen");
+            final Node gardermoen = createNode("Gardermoen");
             Node oslGardermoenRailwayTerminal = createNode("OSL Railway Station");
             Node oslGardermoenBusTerminal = createNode("OSL Bus Station");
             Node oslGardermoenTaxiTerminal = createNode("OSL Taxi Station");
@@ -111,13 +153,37 @@ public class RailroadExample {
             createRelationship(heathrowAirport, LEADS_TO, gardermoen, props);
 
 
-
+            //Meta data model
             Node pointOfInterest = createNode("Point of interest");
             Node trainStation = createNode("Train Station");
+            Node airPort = createNode("Air Port");
+            Node airPortGate = createNode("Air Port Gate");
             Node foodPoint = createNode("Food Point");
+            Node city = createNode("City");
+            createRelationship(city, IS_A, pointOfInterest);
             createRelationship(trainStation, IS_A, pointOfInterest);
+            createRelationship(airPort, IS_A, pointOfInterest);
+            createRelationship(airPortGate, IS_A, pointOfInterest);
             createRelationship(foodPoint, IS_A, pointOfInterest);
 
+
+            Node methodOfTravel = createNode("Method Of Travel");
+            Node airPlane = createNode("Air Plane");
+            Node train = createNode("Train");
+
+            createRelationship(airPlane, CLASSIFIED_AS, methodOfTravel);
+            createRelationship(train, CLASSIFIED_AS, methodOfTravel);
+
+            createRelationship(airPlane, EMBARKS_FROM, airPortGate);
+            createRelationship(train, EMBARKS_FROM, trainStation);
+
+            //Instances of Meta data model
+            createRelationship(oslo, CLASSIFIED_AS, city);
+            createRelationship(bergen, CLASSIFIED_AS, city);
+            createRelationship(london, CLASSIFIED_AS, city);
+            createRelationship(gardermoen, CLASSIFIED_AS, pointOfInterest);
+
+            createRelationship(oslGardermoenRailwayTerminal, CLASSIFIED_AS, trainStation);
 
             createRelationship(londonRailwayStation, CLASSIFIED_AS, trainStation);
             createRelationship(brighton, CLASSIFIED_AS, trainStation);
@@ -129,7 +195,6 @@ public class RailroadExample {
 
             //Gardermoen has a airport, bus terminal train terminal aso
 
-            createRelationship(gardermoen, CLASSIFIED_AS, pointOfInterest);
             createRelationship(oslo, ENGULFS, gardermoen);
             createRelationship(gardermoen, ENGULFS, oslGardermoenRailwayTerminal);
             createRelationship(gardermoen, ENGULFS, oslGardermoenBusTerminal);
@@ -139,7 +204,24 @@ public class RailroadExample {
             createRelationship(london, ENGULFS, londonRailwayStation);
 
 
+            //Template creation
+            Node sk273 = createNode(new HashMap<String, Object>() {{
+                put("name", "SK273");
+                put("from", "gardermoen");
+                put("to", "bergen");
+                put("departure", "friday 16:15");
+                put("flightNumber", "SK273");
+                put("gate", 24);
+            }});
 
+            createRelationship(sk273, CLASSIFIED_AS, airPlane);
+            createRelationship(sk273, TRAVELS, gardermoen);
+            createRelationship(sk273, TRAVELS, bergen);
+
+            Node g24 = createNode("Gate 24");
+            g24.createRelationshipTo(airPortGate, CLASSIFIED_AS);
+            gardermoen.createRelationshipTo(g24, ENGULFS);
+            sk273.createRelationshipTo(g24, EMBARKS_FROM);
 
 
             tx.success();
@@ -154,16 +236,25 @@ public class RailroadExample {
 
     Relationship createRelationship(Node from, RelTypes relationType, Node to, Map properties) {
         Relationship relationship = from.createRelationshipTo(to, relationType);
-        for (String key : ((Map<String, Object>)properties).keySet()) {
+        for (String key : ((Map<String, Object>) properties).keySet()) {
             relationship.setProperty(key, properties.get(key));
         }
         return relationship;
     }
 
-    private Node createNode(String ts) {
+    private Node createNode(final String ts) {
+        return createNode(new HashMap<String, Object>() {{
+            put("name", ts);
+        }});
+    }
+
+    private Node createNode(HashMap<String, Object> properties) {
+        assert (properties.containsKey("name"));
         Node node = graphDb.createNode();
-        node.setProperty("name", ts);
-        nodeIndex.add(node, "name", ts);
+        nodeIndex.add(node, "name", properties.get("name"));
+        for (String key : properties.keySet()) {
+            node.setProperty(key, properties.get(key));
+        }
         return node;
     }
 
