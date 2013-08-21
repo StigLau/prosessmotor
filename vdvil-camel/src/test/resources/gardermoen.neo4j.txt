@@ -1,0 +1,21 @@
+ CREATE (_1:`CITY` { `name`:'Oslo' })
+ CREATE (_2:`CITY` { `name`:'Bergen' })
+ CREATE (_3:`CITY` { `name`:'London' })
+
+ CREATE (_4:`TERMINAL` { `name`:'Oslo Railroad Terminal' })
+ CREATE (_5:`TERMINAL` { `name`:'Gardermoen Railroad Terminal' })
+ CREATE (_6:`TERMINAL` { `name`:'Gardermoen Bus Terminal' })
+ CREATE (_7:`TERMINAL` { `name`:'Gardermoen Taxi Terminal' })
+
+ CREATE (_21:`TERMINAL` { `name`:'Gate 1' })
+ CREATE (_22:`TERMINAL` { `name`:'Gate 2' })
+ CREATE (_23:`TERMINAL` { `name`:'Gate 3' })
+ CREATE (_24:`TERMINAL` { `name`:'Gate 4' })
+
+
+
+ CREATE (_50:`TRANSPORTATION` { `name`:'SK273' })
+ CREATE (_51:`POI` { `name`:'Gate 24' })
+ CREATE (_52:`POI` { `name`:'Gardermoen Security' })
+ CREATE (_53:`POI` { `name`:'Flytoget avgang 17:30' })
+

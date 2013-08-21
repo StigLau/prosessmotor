@@ -1,20 +1,30 @@
 package no.lau;
 
+import org.apache.commons.io.FileUtils;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.neo4j.cypher.javacompat.ExecutionEngine;
+import org.neo4j.cypher.javacompat.ExecutionResult;
 import org.neo4j.graphalgo.GraphAlgoFactory;
 import org.neo4j.graphalgo.PathFinder;
 import org.neo4j.graphalgo.WeightedPath;
 import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.index.Index;
 import org.neo4j.graphdb.index.IndexHits;
+import org.neo4j.helpers.collection.IteratorUtil;
 import org.neo4j.kernel.EmbeddedGraphDatabase;
 import org.neo4j.kernel.Traversal;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static utils.GraphUtil.cleanUp;
@@ -27,10 +37,9 @@ public class RailroadExample {
     private static String DB_PATH = "/tmp/neo4j";
 
 
-
     GraphDatabaseService graphDb = new EmbeddedGraphDatabase(DB_PATH);
-
     Index<Node> nodeIndex;
+    ExecutionEngine engine = new ExecutionEngine(graphDb);
     DataBase db;
 
     @Test
@@ -58,7 +67,6 @@ public class RailroadExample {
     public void testUserCreatesTravelPlanFromOsloToGx553() {
         Node oslo = find("Oslo");
         Node sk273 = find("SK273");
-        System.out.println(oslo);
         //Trip trip = new Trip(graphDb, nodeIndex);
 
         Transaction tx = graphDb.beginTx();
@@ -79,13 +87,17 @@ public class RailroadExample {
             Node osloRailwayStation = find("Oslo Railway Station");
 
             sk273.createRelationshipTo(g24, TRIP_LEG);
-            db.createRelationship(g24, TRIP_LEG, security, new HashMap(){{put("finished", "16:12");}});
+            db.createRelationship(g24, TRIP_LEG, security, new HashMap() {{
+                put("finished", "16:12");
+            }});
             g24.createRelationshipTo(security, TRIP_LEG);
             security.createRelationshipTo(gardermoenRailwayStation, TRIP_LEG);
             osloRailwayStation.createRelationshipTo(security, TRIP_LEG);
 
             osloSk273.delete();
 
+
+            calculateRouteTimes(oslo, sk273);
 
             //Point of interest to Point of interest
             //Region
@@ -98,6 +110,33 @@ public class RailroadExample {
         } finally {
             tx.finish();
         }
+    }
+
+    @Test
+    public void testCreateWithCypher() throws IOException {
+        Transaction tx = graphDb.beginTx();
+        try {
+            File file = new File("/Users/stiglau/utvikling/prosessmotor/vdvil-camel/src/test/resources/gardermoen.neo4j.txt");
+            String cypherFile = FileUtils.readFileToString(file);
+            ExecutionResult result = engine.execute(cypherFile);
+            System.out.println(result.dumpToString());
+
+            tx.success();
+        } finally {
+            tx.finish();
+        }
+    }
+
+
+    private void calculateRouteTimes(Node from, Node to) {
+
+        //ExecutionResult result = engine.execute("start n=node(*) where n.name! = 'Oslo' return n, n.name");
+        ExecutionResult result = engine.execute(
+                "START me=node(*)\n" +
+                        "MATCH me-->friend-[:TRIP_LEG]->friend_of_friend\n" +
+                        "WHERE me.name='Oslo'" +
+                        "RETURN me, friend, friend_of_friend");
+        System.out.println(result.dumpToString());
     }
 
     private Node find(String nodeName) {
@@ -122,8 +161,6 @@ public class RailroadExample {
             tx.finish();
         }
     }
-
-
 
 
     @After

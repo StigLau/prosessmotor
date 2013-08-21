@@ -31,6 +31,7 @@ public class DataBase {
         FROM, //Start of a planned trip
         TO, //End of a planned trip
         EMBARKS_FROM, //Where a Vehicle embarks from
+        TRAVEL_METRICS, //This is the juicy stuff, travel time, distances and which methods to use to calculate
 
     }
 
@@ -61,6 +62,7 @@ public class DataBase {
         }
         return node;
     }
+
 
 
     public void createDataset() {
@@ -124,9 +126,11 @@ public class DataBase {
         Node methodOfTravel = createNode("Method Of Travel");
         Node airPlane = createNode("Air Plane");
         Node train = createNode("Train");
+        Node walking = createNode("Walking");
 
         createRelationship(airPlane, CLASSIFIED_AS, methodOfTravel);
         createRelationship(train, CLASSIFIED_AS, methodOfTravel);
+        createRelationship(walking, CLASSIFIED_AS, methodOfTravel);
 
         createRelationship(airPlane, EMBARKS_FROM, airPortGate);
         createRelationship(train, EMBARKS_FROM, trainStation);
@@ -179,5 +183,19 @@ public class DataBase {
         g24.createRelationshipTo(airPortGate, CLASSIFIED_AS);
         gardermoen.createRelationshipTo(g24, ENGULFS);
         sk273.createRelationshipTo(g24, EMBARKS_FROM);
+
+
+        createRelationship(osloRailwayTerminal, TRAVEL_METRICS, gardermoenRailwayTerminal, new HashMap(){{
+            put("modeOfTransportation", "Train");
+            put("duration", "00:22:00");
+        }});
+        createRelationship(gardermoenRailwayTerminal, TRAVEL_METRICS, securityPortal, new HashMap(){{
+            put("modeOfTransportation", "Walking");
+            put("duration", "00:05:00");
+        }});
+        createRelationship(securityPortal, TRAVEL_METRICS, g24, new HashMap(){{
+            put("modeOfTransportation", "Walking");
+            put("duration", "00:14:30");
+        }});
     }
 }
