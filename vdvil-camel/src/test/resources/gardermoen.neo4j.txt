@@ -1,11 +1,19 @@
- CREATE (_1:`CITY` { `name`:'Oslo' })
- CREATE (_2:`CITY` { `name`:'Bergen' })
- CREATE (_3:`CITY` { `name`:'London' })
+ CREATE
+    (oslo:CITY { name:'Oslo' }),
+    (bergen:CITY { name:'Bergen' }),
+    (london:CITY { name:'London' }),
 
- CREATE (_4:`TERMINAL` { `name`:'Oslo Railroad Terminal' })
- CREATE (_5:`TERMINAL` { `name`:'Gardermoen Railroad Terminal' })
- CREATE (_6:`TERMINAL` { `name`:'Gardermoen Bus Terminal' })
- CREATE (_7:`TERMINAL` { `name`:'Gardermoen Taxi Terminal' })
+    (osloRTerm:TERMINAL { name:'Oslo Railroad Terminal' }),
+    (gardermoenRTerm:TERMINAL { name:'Gardermoen Railroad Terminal' }),
+    (gardermoenBTerm:TERMINAL { name:'Gardermoen Bus Terminal' }),
+    (gardermoenTTerm:TERMINAL { name:'Gardermoen Taxi Terminal' }),
+    (gardermoenCheckin:POI { name:'Gardermoen Checkin' }),
+    (gardermoenTaxfree:POI { name:'Gardermoen Taxfree' }),
+    (gardermoenDomesticTerminal:POI { name:'Gardermoen Domestic Terminal' }),
+    (gardermoenInternationalTerminal:POI { name:'Gardermoen International Terminal' })
+
+//START n=node(*)  FOREACH (m IN [1,2,3]:CREATE UNIQUE n-[:test]->(o { name: 'Gate ' + STR(m)})) //Feil i syntax
+
 
  CREATE (_21:`TERMINAL` { `name`:'Gate 1' })
  CREATE (_22:`TERMINAL` { `name`:'Gate 2' })
@@ -14,8 +22,17 @@
 
 
 
- CREATE (_50:`TRANSPORTATION` { `name`:'SK273' })
- CREATE (_51:`POI` { `name`:'Gate 24' })
- CREATE (_52:`POI` { `name`:'Gardermoen Security' })
- CREATE (_53:`POI` { `name`:'Flytoget avgang 17:30' })
+ CREATE (sk273:`TRANSPORTATION` { `name`:'SK273' })
+ CREATE (gate24:`POI` { `name`:'Gate 24' })
+ CREATE (gardermoenSecurity:`POI` { `name`:'Gardermoen Security' })
+ CREATE (flytoget1730:`POI` { `name`:'Flytoget avgang 17:30' })
 
+ create
+        osloRTerm-[:TRANSPORTATION]-gardermoenRTerm,
+        flytoget1730-[:EMBARKS_FROM]->gardermoenRTerm,
+        gardermoenRTerm-[:TRANSPORTATION]-gardermoenCheckin,
+        gardermoenCheckin-[:TRANSPORTATION]-gardermoenSecurity,
+        gardermoenSecurity-[:TRANSPORTATION]-gardermoenDomesticTerminal,
+        gardermoenSecurity-[:TRANSPORTATION]-gardermoenInternationalTerminal,
+
+        sk273-[:EMBARKS_FROM]->gate24
