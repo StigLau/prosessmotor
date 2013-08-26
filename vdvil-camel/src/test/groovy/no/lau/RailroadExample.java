@@ -116,10 +116,18 @@ public class RailroadExample {
     public void testCreateWithCypher() throws IOException {
         Transaction tx = graphDb.beginTx();
         try {
-            File file = new File("/Users/stiglau/utvikling/prosessmotor/vdvil-camel/src/test/resources/gardermoen.neo4j.txt");
+            File file = new File("/Users/stiglau/utvikling/prosessm" +
+                    "otor/vdvil-camel/src/test/resources/gardermoen.neo4j.txt");
             String cypherFile = FileUtils.readFileToString(file);
             ExecutionResult result = engine.execute(cypherFile);
             System.out.println(result.dumpToString());
+
+
+
+            engine.execute(
+                    "            MATCH a-->b \n" +
+                    "            RETURN *").dumpToString();
+
 
             tx.success();
         } finally {
