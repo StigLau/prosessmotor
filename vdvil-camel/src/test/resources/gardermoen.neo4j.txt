@@ -17,9 +17,6 @@
     (flesland:TERMINAL { name:'Flesland flyplass' })
 
 
-//START n=node(*)  FOREACH (m IN [1,2,3]:CREATE UNIQUE n-[:test]->(o { name: 'Gate ' + STR(m)})) //Feil i syntax
-
-
 
 
 
@@ -28,6 +25,7 @@
  CREATE (gate24:`POI` { `name`:'Gate 24' })
  CREATE (gate1:`POI` { `name`:'Gate 1' }), (gate2:`POI` { `name`:'Gate 2' })
  CREATE (gardermoenSecurity:`POI` { `name`:'Gardermoen Security' })
+ CREATE (gardermoenSecurityB:`POI` { `name`:'Gardermoen SecurityB' })
  CREATE (flytoget1730:`POI` { `name`:'Flytoget avgang 17:30' })
 
 CREATE UNIQUE gardermoenDomesticTerminal-[:TRANSPORTATION]-gate1, gardermoenDomesticTerminal-[:TRANSPORTATION]-gate2
@@ -37,23 +35,26 @@ CREATE UNIQUE gardermoenDomesticTerminal-[:TRANSPORTATION]-gate1, gardermoenDome
 foreach (poi in [gardermoenRTerm,gardermoenBTerm,gardermoenTTerm] : create poi-[:TRANSPORTATION]->gardermoenDeparture, poi-[:TRANSPORTATION]->gardermoenArrival)
 
  create
-        oslo-[:TRANSPORTATION]-osloRTerm,
-        osloRTerm-[:TRANSPORTATION]-gardermoenRTerm,
-        flytoget1730-[:EMBARKS_FROM]->gardermoenRTerm,
-        gardermoenRTerm-[:TRANSPORTATION]-gardermoenCheckin,
-        gardermoenBTerm-[:TRANSPORTATION]-gardermoenCheckin,
-        gardermoenTTerm-[:TRANSPORTATION]-gardermoenCheckin,
-        gardermoenCheckin-[:TRANSPORTATION]-gardermoenSecurity,
-        gardermoenSecurity-[:TRANSPORTATION]-gardermoenDomesticTerminal,
-        gardermoenSecurity-[:TRANSPORTATION]-gardermoenInternationalTerminal,
-        gardermoenInternationalTerminal-[:TRANSPORTATION]-gardermoenTaxfree,
+        oslo-[:TRANSPORTATION]->osloRTerm,
+        osloRTerm-[:TRANSPORTATION]->gardermoenRTerm,
+        flytoget1730-[:EMBARKS]->gardermoenRTerm,
+        gardermoenRTerm-[:TRANSPORTATION]->gardermoenCheckin,
+        gardermoenBTerm-[:TRANSPORTATION]->gardermoenCheckin,
+        gardermoenTTerm-[:TRANSPORTATION]->gardermoenCheckin,
+        gardermoenCheckin-[:TRANSPORTATION]->gardermoenSecurity,
+        gardermoenSecurity-[:TRANSPORTATION]->gardermoenDomesticTerminal,
+        gardermoenSecurity-[:TRANSPORTATION]->gardermoenInternationalTerminal,
+        gardermoenInternationalTerminal-[:TRANSPORTATION]->gardermoenTaxfree,
 
-        gardermoenDomesticTerminal-[:TRANSPORTATION]-gate24,
+        gardermoenDomesticTerminal-[:TRANSPORTATION]->gate24,
 
-        gate24-[:EMBARKS_FROM]->sk273,
+        gate24-[:EMBARKS]->sk273,
 
 
-        sk273-[:EMBARKS_FROM]->flesland,
+        sk273-[:EMBARKS]->flesland,
         flesland-[:TRANSPORTATION]-bergen
+
         ;
+
+
 

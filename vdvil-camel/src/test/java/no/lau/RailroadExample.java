@@ -34,7 +34,7 @@ import static no.lau.DataBase.RelTypes.*;
 //Example code collected from http://www.hascode.com/2012/01/neo4j-graph-database-tutorial-how-to-build-a-route-planner-and-other-examples/
 
 public class RailroadExample {
-    private static String DB_PATH = "/tmp/neo4j";
+    private static String DB_PATH = "target/neo4j";
 
 
     GraphDatabaseService graphDb = new EmbeddedGraphDatabase(DB_PATH);
@@ -112,28 +112,7 @@ public class RailroadExample {
         }
     }
 
-    @Test
-    public void testCreateWithCypher() throws IOException {
-        Transaction tx = graphDb.beginTx();
-        try {
-            File file = new File("/Users/stiglau/utvikling/prosessm" +
-                    "otor/vdvil-camel/src/test/resources/gardermoen.neo4j.txt");
-            String cypherFile = FileUtils.readFileToString(file);
-            ExecutionResult result = engine.execute(cypherFile);
-            System.out.println(result.dumpToString());
 
-
-
-            engine.execute(
-                    "            MATCH a-->b \n" +
-                    "            RETURN *").dumpToString();
-
-
-            tx.success();
-        } finally {
-            tx.finish();
-        }
-    }
 
 
     private void calculateRouteTimes(Node from, Node to) {
@@ -151,6 +130,7 @@ public class RailroadExample {
         IndexHits<Node> aNodes = nodeIndex.get("name", nodeName);
         return aNodes.getSingle();
     }
+
 
 
     @Before
