@@ -34,39 +34,25 @@ public class NewStigsTest {
         try {
             GraphUtil.cleanUp(graphDb, nodeIndex);
 
+            //engine.execute("create index on :TRANSPORTATION(name)");
+            //engine.execute("create index on :POI(name)");
             File file = new File("/Users/stiglau/utvikling/prosessmotor/vdvil-camel/src/test/resources/gardermoen.neo4j.txt");
             String cypherFile = FileUtils.readFileToString(file);
-            ExecutionResult result = engine.execute(cypherFile);
+            ExecutionResult result = engine.profile(cypherFile);
             System.out.println(result.dumpToString());
-
-
-
-
-
-
             tx1.success();
         } finally {
             tx1.finish();
         }
-        System.out.println("Wee");
-
-        Transaction tx = graphDb.beginTx();
-        try {
-            new DataBase(graphDb, nodeIndex).createDataset();
-            tx.success();
-        } finally {
-            tx.finish();
-        }
 
         Transaction tx2 = graphDb.beginTx();
         try {
+            //engine.execute("create index on :POI(name); ");
             System.out.println(engine.execute(
-                    //"START n=node:nodeIndexName(name= {sk273})\n" +
-                    //"start n=node:nodes(name='SK273'), m=node:nodes(name='Gardermoen Security') MATCH n-[*4]-m RETURN n, m"
-                    //"start n=node:nodes(name='SK273'), m=node:nodes(name='Gardermoen Railroad Terminal') MATCH n-[*5]-m RETURN n, m"
-                    //"start m=node:nodes(name='Gate 24') RETURN m"
-                    //"START x  = node:nodes(name='Gardermoen Security') RETURN x"
-                    "match n-->m RETURN *"//Index does not work!
+
+                    //"match n-->m RETURN *"//Index does not work!
+                    "MATCH gt:POI WHERE gt.name='Gate 24' with gt as gate MATCH term:TERMINAL WHERE term.name='Oslo Railroad Terminal' with gate, term MATCH gate <-[r:TRANSPORTATION*]- term return *"
+                            //"start n=node:POI('name:*') set n:POI RETURN count(*)"
 
             ).dumpToString());
             tx2.success();

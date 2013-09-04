@@ -1,0 +1,33 @@
+CREATE
+    (oslo:CITY { name:'Oslo' }),
+    (bergen:CITY { name:'Bergen' }),
+    (london:CITY { name:'London' }),
+
+    (osloRTerm:TERMINAL { name:'Oslo Railroad Terminal' }),
+    (gardermoenRTerm:TERMINAL { name:'Gardermoen Railroad Terminal' }),
+    (gardermoenBTerm:TERMINAL { name:'Gardermoen Bus Terminal' }),
+    (gardermoenTTerm:TERMINAL { name:'Gardermoen Taxi Terminal' }),
+    (gardermoenArrival:POI { name:'Gardermoen Arrival' }),
+    (gardermoenDeparture:POI { name:'Gardermoen Departure' }),
+    (gardermoenCheckin:POI { name:'Gardermoen Checkin' }),
+    (gardermoenTaxfree:POI { name:'Gardermoen Taxfree' }),
+    (gardermoenDomesticTerminal:POI { name:'Gardermoen Domestic Terminal' }),
+    (gardermoenInternationalTerminal:POI { name:'Gardermoen International Terminal' }),
+
+    (flesland:TERMINAL { name:'Flesland flyplass' })
+
+
+
+
+
+ CREATE (sk273:`TRANSPORTATION` { `name`:'SK273' })
+ CREATE (gate24:`POI` { `name`:'Gate 24' })
+ CREATE (gate1:`POI` { `name`:'Gate 1' }), (gate2:`POI` { `name`:'Gate 2' })
+ CREATE (gardermoenSecurity:`POI` { `name`:'Gardermoen Security' })
+ CREATE (gardermoenSecurityB:`POI` { `name`:'SexurityB' })
+ CREATE (flytoget1730:`POI` { `name`:'Flytoget avgang 17:30' })
+
+with count(*) as exists
+
+start ask = node:nodes(name='*')
+ return *
