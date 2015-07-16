@@ -10,8 +10,10 @@
 
     <modules>
         <module>core</module>
+<!--
         <module>camel</module>
         <module>vdvil-camel</module>
+-->
     </modules>
 
     <developers>
